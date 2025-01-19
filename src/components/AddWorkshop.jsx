@@ -39,9 +39,26 @@ function AddWorkshop() {
         +
       </button>
       {showModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <div style={{ background: '#fff', padding: '20px', borderRadius: '8px', width: '300px' }}>
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <div style={{
+            background: '#fff',
+            padding: '20px 30px', // Augmenté pour ajouter du padding interne
+            borderRadius: '8px',
+            width: '350px', // Largeur ajustée
+            boxSizing: 'border-box', // Assure que le padding n'augmente pas la largeur totale
+          }}>
             <h2>Ajouter un Atelier</h2>
+            <label style={{ marginBottom: '5px', display: 'block' }}>Nom de l'atelier</label>
             <input
               type="text"
               placeholder="Nom de l'atelier"
@@ -49,16 +66,43 @@ function AddWorkshop() {
               onChange={(e) => setName(e.target.value)}
               style={{ display: 'block', marginBottom: '10px', width: '100%', padding: '8px' }}
             />
+            <label style={{ marginBottom: '5px', display: 'block' }}>Date de l'atelier</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               style={{ display: 'block', marginBottom: '10px', width: '100%', padding: '8px' }}
             />
-            <button onClick={addWorkshop} style={{ marginRight: '10px' }}>
-              Ajouter
-            </button>
-            <button onClick={() => setShowModal(false)}>Annuler</button>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <button
+                className='cancel-button'
+                onClick={() => setShowModal(false)}
+                style={{
+                  backgroundColor: '#ccc',
+                  color: '#000',
+                  border: 'none',
+                  padding: '10px 15px',
+                  cursor: 'pointer',
+                  borderRadius: '4px',
+                }}
+              >
+                Annuler
+              </button>
+              <button
+                className='submit-button'
+                onClick={addWorkshop}
+                style={{
+                  backgroundColor: '#007BFF',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '10px 15px',
+                  cursor: 'pointer',
+                  borderRadius: '4px',
+                }}
+              >
+                Ajouter
+              </button>
+            </div>
           </div>
         </div>
       )}

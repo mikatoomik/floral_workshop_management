@@ -43,8 +43,6 @@ li:hover {
 }
 
 button {
-  background: linear-gradient(to right, #b03e5f, #d97694);
-  color: white;
   border: none;
   border-radius: 5px;
   padding: 10px 15px;
@@ -69,4 +67,22 @@ input[type="text"] {
 input[type="text"]::placeholder {
   color: #b03e5f;
   font-style: italic;
+}
+
+.cancel-button {
+  background-color: grey;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  background-color: darkgrey;
+}
+
+.submit-button {
+  background: linear-gradient(to right, #b03e5f, #d97694);
+  color: white;
+  margin-left: 10px;
 }

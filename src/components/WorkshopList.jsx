@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import WorkshopParticipants from './WorkshopParticipants';
 import EnrollParticipants from './EnrollParticipants';
@@ -9,42 +9,74 @@ function WorkshopList() {
     const [expandedWorkshop, setExpandedWorkshop] = useState(null);
     const [showEnrollModal, setShowEnrollModal] = useState(false);
     const [selectedWorkshop, setSelectedWorkshop] = useState(null);
+    const expandedWorkshopRef = useRef(null);
 
     useEffect(() => {
         fetchWorkshopsWithRemainingPlaces();
     }, []);
 
-    const fetchWorkshopsWithRemainingPlaces = async () => {
-        const { data: workshops, error } = await supabase
-            .from('workshops')
-            .select('*')
-            .order('date', { ascending: true });
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (expandedWorkshopRef.current && !expandedWorkshopRef.current.contains(event.target)) {
+                setExpandedWorkshop(null); // Ferme l'extension si clic en dehors
+            }
+        };
 
-        if (error) {
-            console.error('Error fetching workshops:', error);
-            return;
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+const fetchWorkshopsWithRemainingPlaces = async () => {
+    const { data: workshops, error } = await supabase
+        .from('workshops')
+        .select('*')
+        .order('date', { ascending: true });
+
+    if (error) {
+        console.error('Error fetching workshops:', error);
+        return;
+    }
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Ignore time for comparison
+
+    const enrichedWorkshops = await Promise.all(
+        workshops.map(async (workshop) => {
+            const { data, error: countError } = await supabase
+                .from('workshops_participants')
+                .select('places')
+                .eq('workshop_id', workshop.id);
+
+            if (countError) {
+                console.error('Error counting participants:', countError);
+                return { ...workshop, remainingPlaces: 'Erreur' };
+            }
+
+            const totalReservedPlaces = data.reduce((sum, entry) => sum + (entry.places || 0), 0);
+            return { ...workshop, remainingPlaces: workshop.places - totalReservedPlaces };
+        })
+    );
+
+    const sortedWorkshops = enrichedWorkshops.sort((a, b) => {
+        const dateA = new Date(a.date).setHours(0, 0, 0, 0);
+        const dateB = new Date(b.date).setHours(0, 0, 0, 0);
+
+        if (dateA >= now && dateB >= now) {
+            return dateA - dateB;
+        } else if (dateA < now && dateB < now) {
+            return dateB - dateA;
+        } else {
+            return dateA >= now ? -1 : 1;
         }
+    });
 
-        const enrichedWorkshops = await Promise.all(
-            workshops.map(async (workshop) => {
-                const { count, error: countError } = await supabase
-                    .from('workshops_participants')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('workshop_id', workshop.id);
+    setWorkshops(sortedWorkshops);
+};
 
-                if (countError) {
-                    console.error('Error counting participants:', countError);
-                    return { ...workshop, remainingPlaces: 'Erreur' };
-                }
 
-                return { ...workshop, remainingPlaces: workshop.places - count };
-            })
-        );
-
-        setWorkshops(enrichedWorkshops);
-    };
-
-    const handleAddWorkshop = async (newWorkshop) => {
+    const handleAddWorkshop = (newWorkshop) => {
         setWorkshops((prevWorkshops) =>
             [...prevWorkshops, newWorkshop].sort((a, b) => new Date(a.date) - new Date(b.date))
         );
@@ -70,64 +102,66 @@ function WorkshopList() {
             <h2>Nos Ateliers</h2>
             <AddWorkshop onAddWorkshop={handleAddWorkshop} />
             <ul style={{ listStyle: 'none', padding: 0 }}>
-                {workshops.map((workshop) => (
-                    <li
-                        key={workshop.id}
-                        style={{
-                            marginBottom: '10px',
-                            background: '#f9f9f9',
-                            padding: '10px',
-                            borderRadius: '5px',
-                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <div
-                            onClick={() => toggleWorkshop(workshop.id)}
+                {workshops.map((workshop) => {
+                    const isPastWorkshop = new Date(workshop.date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0);
+                    return (
+                        <li
+                            key={workshop.id}
                             style={{
-                                cursor: 'pointer',
-                                flex: 1,
-                                fontWeight: expandedWorkshop === workshop.id ? 'bold' : 'normal',
-                            }}
-                        >
-                            {workshop.name} - {new Date(workshop.date).toLocaleDateString('fr-FR')} -{' '}
-                            {workshop.remainingPlaces > 0
-                                ? `Places restantes : ${workshop.remainingPlaces}`
-                                : <span style={{ color: 'red' }}>Complet</span>}
-                        </div>
-                        <button
-                            onClick={() => openEnrollModal(workshop)}
-                            style={{
-                                backgroundColor: workshop.remainingPlaces > 0 ? '#007BFF' : '#CCCCCC',
-                                color: '#fff',
-                                border: 'none',
+                                marginBottom: '10px',
+                                background: '#f9f9f9',
+                                padding: '10px',
                                 borderRadius: '5px',
-                                padding: '5px 10px',
-                                cursor: 'pointer',
+                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                display: 'flex',
+                                flexDirection: 'column',
                             }}
                         >
-                            {workshop.remainingPlaces > 0 ? 'Inscrire' : 'Gérer'}
-                        </button>
-                        {expandedWorkshop === workshop.id && (
                             <div
+                                onClick={() => toggleWorkshop(workshop.id)}
                                 style={{
-                                    marginTop: '10px',
-                                    width: '100%',
-                                    backgroundColor: '#f1f1f1',
-                                    borderRadius: '5px',
-                                    padding: '10px',
+                                    cursor: 'pointer',
+                                    fontWeight: expandedWorkshop === workshop.id ? 'bold' : 'normal',
                                 }}
                             >
-                                <WorkshopParticipants
-                                    workshopId={workshop.id}
-                                    onParticipantUpdate={fetchWorkshopsWithRemainingPlaces}
-                                />
+                                {workshop.name} - {new Date(workshop.date).toLocaleDateString('fr-FR')} -{' '}
+                                {workshop.remainingPlaces > 0
+                                    ? `Places restantes : ${workshop.remainingPlaces}`
+                                    : <span style={{ color: 'red' }}>Complet</span>}
                             </div>
-                        )}
-                    </li>
-                ))}
+                            <button
+                                onClick={() => openEnrollModal(workshop)}
+                                disabled={isPastWorkshop}
+                                style={{
+                                    backgroundColor: !isPastWorkshop ? '#007BFF' : '#CCCCCC',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '5px',
+                                    padding: '5px 10px',
+                                    cursor: isPastWorkshop ? 'not-allowed' : 'pointer',
+                                }}
+                            >
+                                {isPastWorkshop ? 'Terminé' : 'Inscrire'}
+                            </button>
+                            {expandedWorkshop === workshop.id && (
+                                <div
+                                    ref={expandedWorkshopRef}
+                                    style={{
+                                        marginTop: '10px',
+                                        backgroundColor: '#f1f1f1',
+                                        borderRadius: '5px',
+                                        padding: '10px',
+                                    }}
+                                >
+                                    <WorkshopParticipants
+                                        workshopId={workshop.id}
+                                        onParticipantUpdate={fetchWorkshopsWithRemainingPlaces}
+                                    />
+                                </div>
+                            )}
+                        </li>
+                    );
+                })}
             </ul>
 
             {showEnrollModal && selectedWorkshop && (
@@ -158,6 +192,7 @@ function WorkshopList() {
                             workshop={selectedWorkshop}
                             onClose={closeEnrollModal}
                             onParticipantUpdate={fetchWorkshopsWithRemainingPlaces}
+                            maxPlaces={selectedWorkshop.places}
                         />
                     </div>
                 </div>

@@ -7,7 +7,7 @@ function WorkshopParticipants({ workshopId, onParticipantUpdate }) {
     const fetchParticipants = async () => {
         const { data, error } = await supabase
             .from('workshops_participants')
-            .select('participant_id, paid, participants(name)')
+            .select('participant_id, places, paid, participants(name)')
             .eq('workshop_id', workshopId);
 
         if (error) {
@@ -67,7 +67,8 @@ function WorkshopParticipants({ workshopId, onParticipantUpdate }) {
         <ul>
             {participants.map((participant) => (
                 <li key={participant.participant_id}>
-                    <span>{participant.participants.name}</span>
+                    <span>{participant.participants.name} </span>
+                    <span> - {participant.places} places</span>
                     <label>
                         <input
                             type="checkbox"
@@ -78,7 +79,10 @@ function WorkshopParticipants({ workshopId, onParticipantUpdate }) {
                         />
                         a payé
                     </label>
-                    <button onClick={() => handleUnsubscribe(participant.participant_id)}>
+                    <button
+                        className='cancel-button'
+                        onClick={() => handleUnsubscribe(participant.participant_id)}
+                    >
                         Désinscrire
                     </button>
                 </li>
