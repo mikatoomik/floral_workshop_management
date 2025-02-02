@@ -3,12 +3,16 @@ import { supabase } from '../supabaseClient';
 import WorkshopParticipants from './WorkshopParticipants';
 import EnrollParticipants from './EnrollParticipants';
 import AddWorkshop from './AddWorkshop';
+import EditWorkshop from './EditWorkshop';
+import { MdEdit } from 'react-icons/md';
+
 
 function WorkshopList() {
     const [workshops, setWorkshops] = useState([]);
     const [expandedWorkshop, setExpandedWorkshop] = useState(null);
     const [showEnrollModal, setShowEnrollModal] = useState(false);
     const [selectedWorkshop, setSelectedWorkshop] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
     const expandedWorkshopRef = useRef(null);
 
     useEffect(() => {
@@ -96,6 +100,16 @@ const fetchWorkshopsWithRemainingPlaces = async () => {
         setShowEnrollModal(false);
         fetchWorkshopsWithRemainingPlaces();
     };
+    const openEditModal = (workshop) => {
+        setSelectedWorkshop(workshop);
+        setShowEditModal(true);
+    };
+
+    const closeEditModal = () => {
+        setShowEditModal(false);
+        setSelectedWorkshop(null);
+        fetchWorkshopsWithRemainingPlaces();
+    };
 
     return (
         <div>
@@ -129,20 +143,23 @@ const fetchWorkshopsWithRemainingPlaces = async () => {
                                     ? `Places restantes : ${workshop.remainingPlaces}`
                                     : <span style={{ color: 'red' }}>Complet</span>}
                             </div>
-                            <button
-                                onClick={() => openEnrollModal(workshop)}
-                                disabled={isPastWorkshop}
-                                style={{
-                                    backgroundColor: !isPastWorkshop ? '#007BFF' : '#CCCCCC',
-                                    color: '#fff',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    padding: '5px 10px',
-                                    cursor: isPastWorkshop ? 'not-allowed' : 'pointer',
-                                }}
-                            >
-                                {isPastWorkshop ? 'Terminé' : 'Inscrire'}
-                            </button>
+                            <div>
+                                <button
+                                    onClick={() => openEnrollModal(workshop)}
+                                    disabled={isPastWorkshop}
+                                    style={{
+                                        backgroundColor: !isPastWorkshop ? '#007BFF' : '#CCCCCC',
+                                        color: '#fff',
+                                        border: 'none',
+                                        borderRadius: '5px',
+                                        padding: '5px 10px',
+                                        cursor: isPastWorkshop ? 'not-allowed' : 'pointer',
+                                    }}
+                                >
+                                    {isPastWorkshop ? 'Terminé' : 'Inscrire'}
+                                </button>
+                                <MdEdit style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={() => openEditModal(workshop)} />
+                            </div>
                             {expandedWorkshop === workshop.id && (
                                 <div
                                     ref={expandedWorkshopRef}
@@ -163,6 +180,32 @@ const fetchWorkshopsWithRemainingPlaces = async () => {
                     );
                 })}
             </ul>
+            {showEditModal && selectedWorkshop && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <div
+                        style={{
+                            background: '#fff',
+                            padding: '20px',
+                            borderRadius: '8px',
+                            width: '400px',
+                        }}
+                    >
+                        <EditWorkshop workshop={selectedWorkshop} onClose={closeEditModal} />
+                    </div>
+                </div>
+            )}
 
             {showEnrollModal && selectedWorkshop && (
                 <div
