@@ -7,7 +7,7 @@ function WorkshopParticipants({ workshopId, onParticipantUpdate }) {
     const fetchParticipants = async () => {
         const { data, error } = await supabase
             .from('workshops_participants')
-            .select('participant_id, places, paid, participants(name)')
+            .select('participant_id, places, paid, participants(name, phone, email)')
             .eq('workshop_id', workshopId);
 
         if (error) {
@@ -67,8 +67,10 @@ function WorkshopParticipants({ workshopId, onParticipantUpdate }) {
         <ul>
             {participants.map((participant) => (
                 <li key={participant.participant_id}>
-                    <span>{participant.participants.name} </span>
+                    <span>{participant.participants.name}</span>
                     <span> - {participant.places} places</span>
+                    <span> - 📞 {participant.participants.phone}</span>
+                    <span> - 📧 {participant.participants.email}</span>
                     <label>
                         <input
                             type="checkbox"

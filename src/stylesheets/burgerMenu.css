@@ -1,0 +1,41 @@
+/* Styles pour le menu burger */
+.burger-menu {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.menu-toggle {
+    display: none;
+}
+
+.menu-icon {
+    font-size: 24px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.menu {
+    list-style-type: none;
+    background: white;
+    padding: 10px;
+    margin: 0;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    display: none;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.menu-toggle:checked + .menu-icon + .menu {
+    display: block;
+}
+
+.menu li {
+    padding: 8px 12px;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: black;
+}

@@ -1,0 +1,188 @@
+/* Styles pour harmoniser les participants et ateliers */
+.participants-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    width: 100%;
+    padding: 15px;
+    background-color: #fdf2f8;
+}
+
+.participant-card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    width: 95%;
+    max-width: 600px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.participant-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.participant-name {
+    font-size: 1.5em;
+    color: #9d174d;
+    font-weight: bold;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.participant-info {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 0.95em;
+    color: #7f1d1d;
+    gap: 10px;
+    align-items: center;
+}
+
+.participant-info p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.participant-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.participant-card svg {
+    cursor: pointer;
+    color: black;
+    font-size: 1.2em;
+    transition: transform 0.2s ease, color 0.3s ease;
+}
+
+.participant-card svg:hover {
+    transform: scale(1.1);
+    color: #9d174d;
+}
+
+.participant-card input {
+    flex: 1;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    margin-right: 10px;
+    max-width: 83%;
+    margin-left: 10px;
+    min-width: 83%;
+}
+
+.participant-phone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.icon-check {
+    color: green;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.icon-check:hover {
+    transform: scale(1.2);
+    color: #4caf50;
+}
+
+.icon-cancel {
+    color: red;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.icon-cancel:hover {
+    transform: scale(1.2);
+    color: #f44336;
+}
+
+/* Style cohérent pour les cartes ateliers */
+.atelier-card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    width: 95%;
+    max-width: 600px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.atelier-title {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #9d174d;
+    margin: 0;
+}
+
+.atelier-details {
+    font-size: 0.9em;
+    color: #7f1d1d;
+    margin: 5px 0;
+}
+
+.atelier-actions button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.atelier-actions button:hover {
+    background-color: #0056b3;
+}
+
+.atelier-full {
+    color: red;
+    font-weight: bold;
+}
+
+.participant-card .icon-check {
+    color: green !important;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.participant-card .icon-check:hover {
+    transform: scale(1.2);
+    color: #4caf50 !important;
+}
+
+.participant-card .icon-cancel {
+    color: red !important;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.participant-card .icon-cancel:hover {
+    transform: scale(1.2);
+    color: #f44336 !important;
+}
