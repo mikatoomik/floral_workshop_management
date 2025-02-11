@@ -1,0 +1,45 @@
+.drawer {
+  position: fixed;
+  top: 0;
+  left: -380px;
+  width: 160px;
+  height: 100%;
+  background-color: #34495e;
+  color: #b03e5f;
+  transition: left 0.3s ease;
+  z-index: 1000;
+  padding: 30px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.drawer.open {
+  left: 0;
+}
+
+.drawer h2 {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #2c3e50;
+  padding-bottom: 15px;
+  font-size: 24px;
+}
+
+.drawer ul {
+  list-style: none;
+  padding: 0;
+}
+
+.drawer li {
+  margin-bottom: 20px;
+}
+
+.drawer a {
+  color: #b03e5f;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.drawer .power-off {
+  cursor: pointer;
+  font-size: 26px;
+  color: #b03e5f;
+}
