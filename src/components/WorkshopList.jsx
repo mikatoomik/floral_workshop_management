@@ -4,7 +4,7 @@ import WorkshopParticipants from './WorkshopParticipants';
 import EnrollParticipants from './EnrollParticipants';
 import AddWorkshop from './AddWorkshop';
 import EditWorkshop from './EditWorkshop';
-import { MdEdit } from 'react-icons/md';
+import { MdEdit, MdPersonAdd } from 'react-icons/md';
 
 
 function WorkshopList() {
@@ -156,7 +156,7 @@ const fetchWorkshopsWithRemainingPlaces = async () => {
                                         cursor: isPastWorkshop ? 'not-allowed' : 'pointer',
                                     }}
                                 >
-                                    {isPastWorkshop ? 'Terminé' : 'Inscrire'}
+                                    {isPastWorkshop ? 'Terminé' : <MdPersonAdd />}
                                 </button>
                                 <MdEdit style={{ cursor: 'pointer', marginLeft: '10px' }} onClick={() => openEditModal(workshop)} />
                             </div>
