@@ -46,9 +46,10 @@ function ParticipantsList() {
 
         return data
             .filter(workshop =>
-                operator === '<'
+                workshop.workshops && // Vérifie que la jointure a bien retourné un atelier
+                (operator === '<'
                     ? new Date(workshop.workshops.date) < new Date()
-                    : new Date(workshop.workshops.date) >= new Date()
+                    : new Date(workshop.workshops.date) >= new Date())
             )
             .map(workshop => `${workshop.workshops.name} du ${new Date(workshop.workshops.date).toLocaleDateString('fr-FR')}`);
     };
