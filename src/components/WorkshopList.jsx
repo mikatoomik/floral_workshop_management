@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import WorkshopParticipants from './WorkshopParticipants';
 import EnrollParticipants from './EnrollParticipants';
@@ -15,10 +16,24 @@ function WorkshopList() {
     const expandedWorkshopRef = useRef(null);
     const [shops, setShops] = useState([]);
     const [selectedShopId, setSelectedShopId] = useState(null);
+    const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchWorkshopsWithRemainingPlaces();
     }, []);
+
+    // If coming with state requesting a specific workshop to open, handle after workshops load
+    useEffect(() => {
+        if (location?.state?.openWorkshopId && workshops.length > 0) {
+            const { openWorkshopId, shopId } = location.state;
+            if (shopId) setSelectedShopId(shopId);
+            // open the workshop
+            setExpandedWorkshop(openWorkshopId);
+            // clear the location state so it doesn't reopen after navigation
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [location, workshops, navigate]);
 
     useEffect(() => {
         fetchShops();

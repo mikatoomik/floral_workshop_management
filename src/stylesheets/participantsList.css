@@ -20,6 +20,35 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    /* Make sure participant cards appear above other page elements (drawer, ateliers) */
+    position: relative;
+    z-index: 1101;
+}
+
+.participant-card.highlighted {
+    box-shadow: 0 0 0 4px rgba(157, 23, 77, 0.12), 0 4px 12px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.participant-search {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.participant-search input[type="search"] {
+    width: 95%;
+    max-width: 600px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e2e2;
+    font-size: 1rem;
+}
+
+.participant-search input::placeholder {
+    color: #9b9b9b;
 }
 
 .participant-details {
@@ -56,9 +85,10 @@
 
 .participant-actions {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    margin-top: 12px;
 }
 
 .participant-card svg {
@@ -83,6 +113,9 @@
     max-width: 83%;
     margin-left: 10px;
     min-width: 83%;
+    position: relative;
+    z-index: 1130;
+    background: white;
 }
 
 .participant-phone {
@@ -91,29 +124,7 @@
     gap: 8px;
 }
 
-.icon-check {
-    color: green;
-    font-size: 1.2em;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.icon-check:hover {
-    transform: scale(1.2);
-    color: #4caf50;
-}
-
-.icon-cancel {
-    color: red;
-    font-size: 1.2em;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.icon-cancel:hover {
-    transform: scale(1.2);
-    color: #f44336;
-}
+/* unified icon rules moved further below */
 
 /* Style cohérent pour les cartes ateliers */
 .atelier-card {
@@ -163,26 +174,262 @@
     font-weight: bold;
 }
 
-.participant-card .icon-check {
-    color: green !important;
-    font-size: 1.2em;
+/* unified .icon-check/.icon-cancel rules are defined further below */
+
+/* Improved layout & UX for participant cards */
+.participant-main {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 0;
+}
+
+.participant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0;
+}
+
+.participant-badges {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.badge {
+    background: #f3e8ef;
+    color: #7f1d1d;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+}
+.badge.future { background: #eef7f6; color: #0f766e; }
+.badge.past { background: #fff1f2; color: #7f1d1d; }
+
+.participant-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.contact-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4b1b2d;
+}
+
+.contact-value { flex: 1; display:flex; align-items:center; gap:8px; }
+.contact-value { min-width: 0; }
+.contact-link { color: #064e3b; text-decoration: none; }
+.contact-link:hover { text-decoration: underline; }
+
+.action-btn {
+    background: transparent;
+    border: 1px solid #eee;
+    padding: 6px 8px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: transform 0.2s;
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 1102;
 }
 
-.participant-card .icon-check:hover {
-    transform: scale(1.2);
-    color: #4caf50 !important;
+.action-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+
+.copied-indicator {
+    font-size: 0.85rem;
+    color: #065f46;
+    margin-left: 6px;
 }
 
+.icon-inline-edit {
+    background: transparent;
+    border: none;
+    margin-left: 6px;
+    cursor: pointer;
+    color: #9d174d;
+    display: inline-flex;
+    align-items: center;
+}
+
+.icon-inline-edit { position: relative; z-index: 1103; }
+
+.icon-inline-edit:hover { transform: scale(1.05); }
+
+/* make inline edit next to name slightly larger and visible */
+.participant-name .icon-inline-edit { margin-left: 8px; font-size: 1.05rem; padding: 4px; border-radius: 6px; background: transparent; }
+.participant-name .icon-inline-edit:hover { background: rgba(157,23,77,0.06); }
+
+/* Unified check/cancel buttons for name, email and phone edits */
+.icon-check,
+.icon-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    font-size: 1.05rem;
+    margin-left: 8px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    padding: 4px;
+    cursor: pointer;
+    transition: transform 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
+    position: relative;
+    z-index: 1130; /* ensure above action column */
+    fill: currentColor;
+    min-width: 36px;
+    min-height: 36px;
+    line-height: 1;
+}
+
+/* keep semantic colors */
+.icon-check { color: #059669 !important; }
+.icon-cancel { color: #dc2626 !important; }
+
+.icon-check:hover { transform: translateY(-2px) scale(1.02); background: #ecfdf5; }
+.icon-cancel:hover { transform: translateY(-2px) scale(1.02); background: #fff1f2; }
+
+/* Ensure inline inputs for contact rows leave room for the icons */
+.participant-contact input {
+    flex: 1 1 auto;
+    min-width: 0;
+    /* leave ~90px for the inline icons and spacing */
+    max-width: calc(100% - 90px);
+}
+
+@media (min-width: 800px) {
+    /* grid layout on larger screens: left info, right actions; footer spans both columns */
+    .participant-card {
+        display: grid;
+        grid-template-columns: 1fr 140px;
+        grid-template-rows: auto auto;
+        gap: 12px 18px;
+        align-items: start;
+    }
+    .participant-main { grid-column: 1 / 2; grid-row: 1 / 2; }
+    .participant-actions { grid-column: 2 / 3; grid-row: 1 / 2; display:flex; flex-direction: column; gap:8px; align-items:flex-end; }
+    .participant-footer { grid-column: 1 / -1; grid-row: 2 / 3; width: 100%; margin-top: 6px; display:flex; justify-content:center; }
+    /* Ensure drawers for past/future workshops span full width under the footer */
+    .participant-card .workshop-drawer { grid-column: 1 / -1; }
+}
+
+/* Fallback: ensure inline-edit icons and svgs are visible and tappable */
+.icon-inline-edit,
+.action-btn svg,
+.participant-card svg {
+    display: inline-flex !important;
+    color: rgba(0,0,0,0.75) !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 1110 !important;
+}
+
+/* Stronger rule to ensure check/cancel buttons inside participant cards keep intended size and colors */
+.participant-card .icon-check,
 .participant-card .icon-cancel {
-    color: red !important;
-    font-size: 1.2em;
-    cursor: pointer;
-    transition: transform 0.2s;
+    display: inline-flex !important;
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 18px !important;
+    padding: 4px !important;
+    margin-left: 8px !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    border: 1px solid rgba(0,0,0,0.06) !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+    cursor: pointer !important;
+    transition: transform 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease !important;
+    position: relative !important;
+    z-index: 1130 !important;
+    fill: currentColor !important;
+}
+.participant-card .icon-check { color: #059669 !important; }
+.participant-card .icon-cancel { color: #dc2626 !important; }
+
+.participant-card .icon-check path,
+.participant-card .icon-cancel path {
+    fill: currentColor !important;
 }
 
-.participant-card .icon-cancel:hover {
-    transform: scale(1.2);
-    color: #f44336 !important;
+/* Ensure the SVG inside the icon buttons uses the intended size and color */
+.icon-check svg,
+.icon-cancel svg,
+.participant-card .icon-check svg,
+.participant-card .icon-cancel svg {
+    width: 18px !important;
+    height: 18px !important;
+    display: block !important;
+    fill: currentColor !important;
 }
+
+/* Also set stroke where icons use stroke instead of fill */
+.icon-check svg *,
+.icon-cancel svg *,
+.participant-card .icon-check svg *,
+.participant-card .icon-cancel svg * {
+    fill: currentColor !important;
+    stroke: currentColor !important;
+}
+
+
+/* Footer badges and drawer */
+.participant-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    align-items: center;
+}
+
+.badge-button {
+    border: none;
+    background: #fff1f2;
+    color: #7f1d1d;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    transition: background 0.18s, transform 0.12s;
+}
+.badge-button.future { background: #ecfdf5; color: #0f766e; }
+.badge-button.active { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+
+.workshop-drawer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 300ms ease, padding 200ms ease;
+    padding: 0 12px;
+    background: rgba(245,245,245,0.6);
+    border-radius: 0 0 12px 12px;
+}
+
+.workshop-drawer.open {
+    padding: 10px 12px 14px 12px;
+    max-height: 400px; /* enough to show a few items; adjust if needed */
+}
+
+.workshop-drawer ul { margin: 0; padding-left: 16px; }
+.workshop-drawer li { margin-bottom: 6px; }
+.drawer-empty { color: #666; font-size: 0.95rem; padding: 6px 0; }
+
+/* Color the drawers to match the badges */
+.workshop-drawer.past { background: rgba(255,241,242,0.9); }
+.workshop-drawer.future { background: rgba(238,247,246,0.95); }
+
+.workshop-drawer.past ul li { color: #7f1d1d; padding: 8px 12px; background: rgba(255,255,255,0.6); border-radius: 12px; margin-bottom: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.04); }
+.workshop-drawer.future ul li { color: #064e3b; padding: 8px 12px; background: rgba(255,255,255,0.6); border-radius: 12px; margin-bottom: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.04); }
+
+.workshop-drawer ul li a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+}
+
+.workshop-drawer ul li a:hover { text-decoration: underline; }

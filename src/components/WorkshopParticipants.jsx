@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { MdRemoveCircle, MdPersonRemove } from 'react-icons/md';
+import { Link } from 'react-router-dom';
 
 function WorkshopParticipants({ workshopId, onParticipantUpdate }) {
     const [participants, setParticipants] = useState([]);
@@ -109,7 +110,14 @@ function WorkshopParticipants({ workshopId, onParticipantUpdate }) {
                         width: '100%',
                         marginBottom: '5px'
                     }}>
-                        <span>{participant.participants.name}</span>
+                        <span>
+                            <Link
+                                to={`/participants#participant-${participant.participant_id}`}
+                                style={{ color: '#9d174d', fontWeight: 'bold', textDecoration: 'none' }}
+                            >
+                                {participant.participants.name}
+                            </Link>
+                        </span>
                         <MdPersonRemove style={{ cursor: 'pointer' }} onClick={() => handleUnsubscribe(participant.participant_id)} />
                     </div>
                     <div style={{ marginBottom: '5px' }}>
