@@ -7,6 +7,11 @@ function EnrollParticipants({ workshop, onClose, onParticipantUpdate }) {
     const [selectedParticipants, setSelectedParticipants] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedExistingParticipant, setSelectedExistingParticipant] = useState(null);
+    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [newName, setNewName] = useState('');
+    const [newEmail, setNewEmail] = useState('');
+    const [newPhone, setNewPhone] = useState('');
+    const [createError, setCreateError] = useState('');
 
     useEffect(() => {
         fetchParticipants();
@@ -81,27 +86,55 @@ function EnrollParticipants({ workshop, onClose, onParticipantUpdate }) {
                 alert('Le participant existe déjà, veuillez le sélectionner dans la liste.');
                 return;
             }
-
-            const { data, error } = await supabase
-                .from('participants')
-                .insert([{ name: searchQuery }])
-                .select('*');
-
-            if (error) {
-                console.error('Error adding participant:', error);
-            } else {
-                const newParticipant = data[0];
-                setParticipants((prev) => [...prev, newParticipant]);
-                setFilteredParticipants((prev) => [...prev, newParticipant]);
-                setSelectedParticipants((prev) => [
-                    ...prev,
-                    { id: newParticipant.id, places: 1 },
-                ]);
-            }
+            // Open inline create form instead of creating immediately
+            setNewName(searchQuery.trim());
+            setNewEmail('');
+            setNewPhone('');
+            setCreateError('');
+            setShowCreateForm(true);
         }
 
         setSearchQuery('');
         setSelectedExistingParticipant(null);
+    };
+
+    const handleCreateParticipant = async () => {
+        setCreateError('');
+        const name = (newName || '').trim();
+        const email = (newEmail || '').trim();
+        const phone = (newPhone || '').trim();
+        if (!name) { setCreateError('Le nom est requis.'); return; }
+        if (!email && !phone) { setCreateError('Merci de fournir un email ou un téléphone.'); return; }
+
+        // prevent duplicate exact-name creation
+        const existing = participants.find(p => p.name.toLowerCase() === name.toLowerCase());
+        if (existing) {
+            // select existing and close form
+            if (!selectedParticipants.some(sp => sp.id === existing.id)) {
+                setSelectedParticipants(prev => [...prev, { id: existing.id, places: 1 }]);
+            }
+            setShowCreateForm(false);
+            setNewName(''); setNewEmail(''); setNewPhone('');
+            return;
+        }
+
+        const { data, error } = await supabase
+            .from('participants')
+            .insert([{ name, email: email || null, phone: phone || null }])
+            .select('*');
+
+        if (error) {
+            console.error('Error creating participant:', error);
+            setCreateError('Erreur lors de la création. Réessayer.');
+            return;
+        }
+
+        const newParticipant = data[0];
+        setParticipants(prev => [...prev, newParticipant]);
+        setFilteredParticipants(prev => [...prev, newParticipant]);
+        setSelectedParticipants(prev => [...prev, { id: newParticipant.id, places: 1 }]);
+        setShowCreateForm(false);
+        setNewName(''); setNewEmail(''); setNewPhone('');
     };
 
     const adjustPlaces = (participantId, adjustment) => {
@@ -169,6 +202,20 @@ function EnrollParticipants({ workshop, onClose, onParticipantUpdate }) {
                     Ajouter / Sélectionner
                 </button>
             </div>
+            {showCreateForm && (
+                <div style={{ border: '1px solid #e0e0e0', padding: 8, borderRadius: 6, marginBottom: 8 }}>
+                    <div style={{ marginBottom: 6 }}><strong>Créer "{newName}"</strong></div>
+                    <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+                        <input placeholder="Email (optionnel)" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} style={{ flex: 1, padding: 6, borderRadius: 4, border: '1px solid #ccc' }} />
+                        <input placeholder="Téléphone (optionnel)" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} style={{ flex: 1, padding: 6, borderRadius: 4, border: '1px solid #ccc' }} />
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <button onClick={handleCreateParticipant} style={{ padding: '6px 10px', background: '#059669', color: '#fff', border: 'none', borderRadius: 4 }}>Créer et sélectionner</button>
+                        <button onClick={() => setShowCreateForm(false)} style={{ padding: '6px 10px', background: 'transparent', border: '1px solid #ccc', borderRadius: 4 }}>Annuler</button>
+                        {createError && <span style={{ color: 'red', marginLeft: 8 }}>{createError}</span>}
+                    </div>
+                </div>
+            )}
             <ul
                 style={{
                     maxHeight: '150px',
@@ -179,6 +226,13 @@ function EnrollParticipants({ workshop, onClose, onParticipantUpdate }) {
                     borderRadius: '5px',
                 }}
             >
+                {searchQuery.trim() && filteredParticipants.length === 0 && !showCreateForm && (
+                    <li style={{ padding: 8, borderBottom: '1px solid #f0f0f0' }}>
+                        <button onClick={() => { setNewName(searchQuery.trim()); setShowCreateForm(true); }} style={{ background: 'transparent', border: 'none', color: '#0f766e', cursor: 'pointer' }}>
+                            Créer "{searchQuery.trim()}"
+                        </button>
+                    </li>
+                )}
                 {filteredParticipants.map((participant) => {
                     const isSelected = selectedParticipants.some((p) => p.id === participant.id);
                     const places = isSelected

@@ -86,3 +86,38 @@ input[type="text"]::placeholder {
   color: white;
   margin-left: 10px;
 }
+
+select {
+  appearance: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+
+  /* Flèche custom */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%22292%22%20height%3D%22292%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4L166.6%20189.8c-9.4%209.4-24.6%209.4-33.9%200L5%2069.4C-1.6%2062.8-1.6%2052.2%205%2045.6l22.6-22.6c6.6-6.6%2017.2-6.6%2023.8%200L146%20117.8%20240.6%2023.2c6.6-6.6%2017.2-6.6%2023.8%200L287%2045.6c6.6%206.6%206.6%2017.2%200%2023.8z%22/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7em top 50%;
+  background-size: 1em auto;
+}
+
+select:focus {
+  outline: none;
+  border-color: #b56978; /* ou la couleur dominante de ton thème */
+  box-shadow: 0 0 0 2px rgba(181, 105, 120, 0.2);
+}
+
+
+input.form-field,
+select.form-field {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
