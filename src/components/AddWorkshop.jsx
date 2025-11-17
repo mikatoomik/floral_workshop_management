@@ -5,6 +5,7 @@ function AddWorkshop({ onAddWorkshop }) {
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState('');
   const [date, setDate] = useState('');
+  const [description, setDescription] = useState('');
   const [timeslot, setTimeslot] = useState('matin');
   const [shopId, setShopId] = useState('');
   const [shops, setShops] = useState([]);
@@ -20,13 +21,14 @@ function AddWorkshop({ onAddWorkshop }) {
   };
 
   const addWorkshop = async () => {
-    const { data, error } = await supabase.from('workshops').insert([{ name, date, shop_id: shopId, timeslot }]).select('*');
+    const { data, error } = await supabase.from('workshops').insert([{ name, date, shop_id: shopId, timeslot, description }]).select('*');
     if (error) {
       console.error('Error adding workshop:', error);
     } else {
       if (onAddWorkshop && data && data[0]) onAddWorkshop(data[0]);
       setName('');
       setDate('');
+      setDescription('');
       setTimeslot('matin');
       setShopId('');
       setShowModal(false);
@@ -103,6 +105,14 @@ function AddWorkshop({ onAddWorkshop }) {
               <option value="après-midi">Après-midi</option>
               <option value="soir">Soir</option>
             </select>
+
+            <label style={{ marginBottom: '5px', display: 'block' }}>Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Description (optionnel)"
+              style={{ display: 'block', marginBottom: '10px', width: '100%', padding: '8px', minHeight: '80px', resize: 'vertical' }}
+            />
 
             <select className="form-field" value={shopId} onChange={(e) => setShopId(e.target.value)}>
               <option value="">Sélectionner une boutique</option>

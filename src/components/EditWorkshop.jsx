@@ -5,6 +5,7 @@ function EditWorkshop({ workshop, onClose }) {
   const [name, setName] = useState(workshop.name);
   const [capacity, setCapacity] = useState(workshop.places);
   const [date, setDate] = useState(workshop.date);
+  const [description, setDescription] = useState(workshop.description || '');
   const [timeslot, setTimeslot] = useState(workshop.timeslot || 'matin');
   const [reservedSeats, setReservedSeats] = useState(0);
 
@@ -34,7 +35,7 @@ function EditWorkshop({ workshop, onClose }) {
     
     const { error } = await supabase
       .from('workshops')
-      .update({ name, places: capacity, date, timeslot })
+      .update({ name, places: capacity, date, timeslot, description })
       .eq('id', workshop.id);
     
     if (error) console.error('Error updating workshop:', error);
@@ -87,6 +88,15 @@ function EditWorkshop({ workshop, onClose }) {
           <option value="après-midi">Après-midi</option>
           <option value="soir">Soir</option>
         </select>
+      </div>
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Description</label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Description (optionnelle)"
+          style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc', minHeight: '80px', resize: 'vertical' }}
+        />
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <button 
