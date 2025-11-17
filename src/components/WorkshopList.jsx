@@ -140,6 +140,14 @@ function WorkshopList() {
         fetchWorkshopsWithRemainingPlaces();
     };
 
+    const formatTimeslot = (t) => {
+        if (!t) return 'Matin';
+        if (t === 'après-midi') return 'Après-midi';
+        if (t === 'soir') return 'Soir';
+        // Fallback: capitalize
+        return t.charAt(0).toUpperCase() + t.slice(1);
+    };
+
     return (
         <div>
             <h2>Nos Ateliers</h2>
@@ -189,7 +197,7 @@ function WorkshopList() {
                                         fontWeight: expandedWorkshop === workshop.id ? 'bold' : 'normal',
                                     }}
                                 >
-                                    {workshop.name} - {workshop.shop} : {new Date(workshop.date).toLocaleDateString('fr-FR')} -{' '}
+                                    {workshop.name} - {workshop.shop} : {new Date(workshop.date).toLocaleDateString('fr-FR')} - {formatTimeslot(workshop.timeslot)} -{' '}
                                     {workshop.remainingPlaces > 0
                                         ? `Places restantes : ${workshop.remainingPlaces}`
                                         : <span style={{ color: 'red' }}>Complet</span>}

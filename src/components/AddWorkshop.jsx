@@ -5,6 +5,7 @@ function AddWorkshop({ onAddWorkshop }) {
   const [showModal, setShowModal] = useState(false);
   const [name, setName] = useState('');
   const [date, setDate] = useState('');
+  const [timeslot, setTimeslot] = useState('matin');
   const [shopId, setShopId] = useState('');
   const [shops, setShops] = useState([]);
 
@@ -19,13 +20,14 @@ function AddWorkshop({ onAddWorkshop }) {
   };
 
   const addWorkshop = async () => {
-    const { data, error } = await supabase.from('workshops').insert([{ name, date, shop_id: shopId }]).select('*');
+    const { data, error } = await supabase.from('workshops').insert([{ name, date, shop_id: shopId, timeslot }]).select('*');
     if (error) {
       console.error('Error adding workshop:', error);
     } else {
       if (onAddWorkshop && data && data[0]) onAddWorkshop(data[0]);
       setName('');
       setDate('');
+      setTimeslot('matin');
       setShopId('');
       setShowModal(false);
     }
@@ -89,6 +91,18 @@ function AddWorkshop({ onAddWorkshop }) {
               onChange={(e) => setDate(e.target.value)}
               style={{ display: 'block', marginBottom: '10px', width: '100%', padding: '8px' }}
             />
+
+            <label style={{ marginBottom: '5px', display: 'block' }}>Créneau</label>
+            <select
+              className="form-field"
+              value={timeslot}
+              onChange={(e) => setTimeslot(e.target.value)}
+              style={{ display: 'block', marginBottom: '10px', width: '100%', padding: '8px' }}
+            >
+              <option value="matin">Matin</option>
+              <option value="après-midi">Après-midi</option>
+              <option value="soir">Soir</option>
+            </select>
 
             <select className="form-field" value={shopId} onChange={(e) => setShopId(e.target.value)}>
               <option value="">Sélectionner une boutique</option>
