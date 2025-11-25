@@ -32,7 +32,7 @@ function EnrollParticipants({ workshop, onClose, onParticipantUpdate }) {
     const fetchEnrolledParticipants = async () => {
         const { data, error } = await supabase
             .from('workshops_participants')
-            .select('participant_id, places')
+            .select('participant_id, places, paid')
             .eq('workshop_id', workshop.id);
 
         if (error) {
@@ -41,6 +41,7 @@ function EnrollParticipants({ workshop, onClose, onParticipantUpdate }) {
             const enrolled = data.map((item) => ({
                 id: item.participant_id,
                 places: item.places || 1, // Par défaut 1 place si non défini
+                paid: item.paid
             }));
             setSelectedParticipants(enrolled);
         }
@@ -150,24 +151,85 @@ function EnrollParticipants({ workshop, onClose, onParticipantUpdate }) {
     };
 
     const handleEnroll = async () => {
-        const { error } = await supabase
-            .from('workshops_participants')
-            .upsert(
-                selectedParticipants.map((participant) => ({
-                    workshop_id: workshop.id,
-                    participant_id: participant.id,
-                    places: participant.places,
-                    paid: false,
-                })),
-                { onConflict: ['workshop_id', 'participant_id'] }
-            );
-
-        if (error) {
-            console.error('Error enrolling participants:', error);
-        } else if (onParticipantUpdate) {
-            onParticipantUpdate();
+        if (!workshop?.id) {
+            alert("Erreur interne: ID de l'atelier manquant.");
+            return;
         }
 
+        if (selectedParticipants.length === 0) {
+            onClose();
+            return;
+        }
+
+        // Récupérer les inscriptions existantes pour savoir si on doit insert ou update
+        // car la contrainte unique (workshop_id, participant_id) semble manquante pour le upsert
+        const { data: existingRows, error: fetchError } = await supabase
+            .from('workshops_participants')
+            .select('participant_id')
+            .eq('workshop_id', workshop.id);
+
+        if (fetchError) {
+            console.error('Error checking existing enrollments:', fetchError);
+            alert('Erreur lors de la vérification des inscriptions.');
+            return;
+        }
+
+        const existingParticipantIds = new Set(existingRows.map(r => r.participant_id));
+
+        const toInsert = [];
+        const toUpdate = [];
+
+        selectedParticipants.forEach(p => {
+            const payload = {
+                workshop_id: workshop.id,
+                participant_id: p.id,
+                places: p.places,
+                paid: p.paid !== undefined ? p.paid : false,
+            };
+
+            if (existingParticipantIds.has(p.id)) {
+                toUpdate.push(payload);
+            } else {
+                toInsert.push(payload);
+            }
+        });
+
+        // Exécuter les insertions
+        if (toInsert.length > 0) {
+            const { error: insertError } = await supabase
+                .from('workshops_participants')
+                .insert(toInsert);
+            
+            if (insertError) {
+                console.error('Error inserting participants:', insertError);
+                alert('Erreur lors de l\'ajout des participants : ' + insertError.message);
+                return;
+            }
+        }
+
+        // Exécuter les mises à jour
+        if (toUpdate.length > 0) {
+            const updatePromises = toUpdate.map(p => 
+                supabase
+                    .from('workshops_participants')
+                    .update({ places: p.places, paid: p.paid })
+                    .eq('workshop_id', workshop.id)
+                    .eq('participant_id', p.participant_id)
+            );
+
+            const results = await Promise.all(updatePromises);
+            const updateError = results.find(r => r.error)?.error;
+            
+            if (updateError) {
+                console.error('Error updating participants:', updateError);
+                alert('Erreur lors de la mise à jour des participants : ' + updateError.message);
+                return;
+            }
+        }
+
+        if (onParticipantUpdate) {
+            onParticipantUpdate();
+        }
         onClose();
     };
 
